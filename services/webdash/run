@@ -1,0 +1,21 @@
+#!/data/data/com.termux/files/usr/bin/bash
+source "$HACKLAB_HOME/lib/common.sh"
+install_pkg_quiet python
+WEBROOT="$HACKLAB_HOME/webdash"
+mkdir -p "$WEBROOT"
+cp -f "$HACKLAB_HOME/src/webdash/index.html" "$WEBROOT/" 2>/dev/null
+cp -f "$HACKLAB_HOME/src/webdash/style.css" "$WEBROOT/" 2>/dev/null
+cp -f "$HACKLAB_HOME/src/webdash/app.js" "$WEBROOT/" 2>/dev/null
+cp -f "$HACKLAB_HOME/src/webdash/server.py" "$WEBROOT/" 2>/dev/null
+ln -sf "$HACKLAB_HOME/status.json" "$WEBROOT/status.json"
+
+cd "$WEBROOT" || exit 1
+# Bound to loopback by default — this is intentional. The control-panel
+# actions (start/stop/install) are no more dangerous than local shell
+# access, but that's only true while it stays off the LAN. See server.py
+# for why: change HACKLAB_WEBDASH_BIND to 0.0.0.0 only if you understand
+# that means anyone on the same network can start/stop services here.
+export HACKLAB_HOME
+export HACKLAB_WEBDASH_BIND="${HACKLAB_WEBDASH_BIND:-127.0.0.1}"
+export HACKLAB_WEBDASH_PORT="${HACKLAB_WEBDASH_PORT:-8080}"
+exec python3 server.py
