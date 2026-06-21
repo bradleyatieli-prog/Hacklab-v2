@@ -1,0 +1,16 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# ============================================================
+#  hacklab-v2 / boot/noroot/hacklab-boot
+#  Fires on BOOT_COMPLETED via the Termux:Boot companion app.
+#  Starts the full service graph (dropbear, metrics, webdash) —
+#  the engine resolves dependency order itself, this script just
+#  triggers "up".
+#
+#  Same Android-level caveats as before, still not scriptable:
+#  - open Termux:Boot once manually after install
+#  - exempt Termux + Termux:Boot from battery optimization
+# ============================================================
+export HACKLAB_HOME="$HOME/.hacklab"
+source "$HACKLAB_HOME/lib/common.sh"
+log "Boot trigger fired — bringing up service graph (no-root mode)"
+bash "$HACKLAB_HOME/lib/svc-engine.sh" up >> "$HACKLAB_HOME/logs/boot.log" 2>&1
