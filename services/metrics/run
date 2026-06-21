@@ -1,0 +1,40 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Writes status.json every 2s. Both the TUI dashboard and the web
+# dashboard read from this single source instead of each polling
+# the system independently.
+source "$HACKLAB_HOME/lib/common.sh"
+OUT="$HACKLAB_HOME/status.json"
+
+svc_table_to_json() {
+    bash "$HACKLAB_HOME/lib/svc-engine.sh" status | tail -n +2 | \
+    awk '{printf "{\"name\":\"%s\",\"type\":\"%s\",\"pid\":\"%s\",\"health\":\"%s\"}", $1,$2,$3,$4; if (NR>0) print ","}' | \
+    sed '$ s/,$//'
+}
+
+while true; do
+    mem_line=$(awk '/MemTotal/{t=$2} /MemAvailable/{a=$2} END{printf "%d,%d", t-a, t}' /proc/meminfo 2>/dev/null)
+    mem_used="${mem_line%,*}"; mem_total="${mem_line#*,}"
+    load=$(awk '{print $1","$2","$3}' /proc/loadavg 2>/dev/null)
+    uptime_s=$(awk '{print int($1)}' /proc/uptime 2>/dev/null)
+    battery="null"
+    if command -v termux-battery-status >/dev/null 2>&1; then
+        battery=$(termux-battery-status 2>/dev/null)
+        [ -z "$battery" ] && battery="null"
+    fi
+
+    {
+        echo "{"
+        echo "  \"updated\": $(date +%s),"
+        echo "  \"uptime_seconds\": ${uptime_s:-0},"
+        echo "  \"mem_used_kb\": ${mem_used:-0},"
+        echo "  \"mem_total_kb\": ${mem_total:-0},"
+        echo "  \"load\": \"${load:-0,0,0}\","
+        echo "  \"battery\": ${battery},"
+        echo "  \"services\": ["
+        svc_table_to_json
+        echo "  ]"
+        echo "}"
+    } > "$OUT.tmp" && mv "$OUT.tmp" "$OUT"
+
+    sleep 2
+done
