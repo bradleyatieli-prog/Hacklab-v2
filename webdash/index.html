@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hacklab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>hacklab<span class="cursor">_</span></h1>
+    <div id="clock">--:--:--</div>
+  </header>
+
+  <main>
+    <section class="panel" id="panel-vitals">
+      <h2>vitals</h2>
+      <div class="grid">
+        <div class="stat"><span class="label">uptime</span><span class="value" id="uptime">-</span></div>
+        <div class="stat"><span class="label">load</span><span class="value" id="load">-</span></div>
+        <div class="stat"><span class="label">battery</span><span class="value" id="battery">-</span></div>
+      </div>
+      <div class="bar-row">
+        <span class="label">memory</span>
+        <div class="bar"><div class="bar-fill" id="mem-fill"></div></div>
+        <span class="value" id="mem-text">-</span>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-services">
+      <h2>services</h2>
+      <table id="svc-table">
+        <thead><tr><th>name</th><th>type</th><th>pid</th><th>health</th><th>actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="panel" id="panel-modules">
+      <h2>tool modules</h2>
+      <p class="hint">Lazy-installed, nothing bundled upfront. Heavy installs (metasploit, gui-x11) ask for confirmation, same as the CLI menu.</p>
+      <table id="mod-table">
+        <thead><tr><th>name</th><th>description</th><th>status</th><th>actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="panel" id="panel-logs" hidden>
+      <h2>log: <span id="log-name">-</span> <button class="btn btn-ghost" id="log-close">close</button></h2>
+      <pre id="log-body"></pre>
+    </section>
+  </main>
+
+  <footer>
+    <span id="conn-status" class="offline">connecting...</span>
+  </footer>
+
+<dialog id="confirm-dialog">
+  <p id="confirm-text"></p>
+  <div class="dialog-actions">
+    <button class="btn btn-ghost" id="confirm-cancel">cancel</button>
+    <button class="btn btn-danger" id="confirm-ok">confirm install</button>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
