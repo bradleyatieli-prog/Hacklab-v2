@@ -1,0 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/bash
+source "$HACKLAB_HOME/lib/common.sh"
+install_pkg_quiet dropbear
+[ -f "$HACKLAB_HOME/dropbear_rsa_host_key" ] || dropbearkey -t rsa -f "$HACKLAB_HOME/dropbear_rsa_host_key" >/dev/null 2>&1
+exec dropbear -r "$HACKLAB_HOME/dropbear_rsa_host_key" -p 8022 -E -F
